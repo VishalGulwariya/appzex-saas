@@ -1,0 +1,31 @@
+{
+    "name": "appzex",
+    "version": "0.1.0",
+    "private": true,
+    "workspaces": [
+        "apps/api",
+        "apps/web"
+    ],
+    "scripts": {
+        "dev": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
+        "dev:api": "npm run dev --workspace @appzex/api",
+        "dev:web": "npm run dev --workspace @appzex/web",
+        "build": "npm run build --workspace @appzex/api && npm run build:web",
+        "build:web": "node scripts/build-web.mjs",
+        "lint": "npm run lint --workspace @appzex/api && npm run lint --workspace @appzex/web",
+        "typecheck": "npm run typecheck --workspace @appzex/api && npm run typecheck --workspace @appzex/web",
+        "test": "npm run test --workspace @appzex/api && npm run test --workspace @appzex/web",
+        "ai:preflight": "npm run ai:preflight --workspace @appzex/api",
+        "test:e2e": "playwright test --config=e2e/playwright.config.mjs",
+        "test:e2e:install": "playwright install chromium",
+        "db:generate": "npm run db:generate --workspace @appzex/api",
+        "db:migrate": "npm run db:migrate --workspace @appzex/api",
+        "db:deploy": "npm run db:deploy --workspace @appzex/api",
+        "db:seed": "prisma db seed"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.63.0",
+        "concurrently": "^9.2.1",
+        "typescript": "^5.9.3"
+    }
+}

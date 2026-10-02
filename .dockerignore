@@ -1,0 +1,23 @@
+# Keep the build context small and, critically, keep real secrets out of the image.
+# A stray `.env` here would be baked into a layer and recoverable from the image history.
+.env
+.env.*
+!.env.example
+
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+coverage
+test-results
+playwright-report
+private-uploads
+
+.git
+.gitignore
+.vscode
+.idea
+*.log
+npm-debug.log*

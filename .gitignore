@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output and caches
+.next/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+
+# Test output
+test-results/
+playwright-report/
+
+# Runtime data: user uploads are private and must never enter version control
+private-uploads/
+
+# Environment files and secrets.
+# `.env.example` is the only tracked env file; it contains placeholders only.
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

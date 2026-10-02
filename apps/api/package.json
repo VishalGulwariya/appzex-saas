@@ -1,0 +1,40 @@
+{
+  "name": "@appzex/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "lint": "eslint src --max-warnings=0",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --passWithNoTests",
+    "ai:preflight": "tsx scripts/ai-preflight.ts",
+    "db:generate": "node scripts/prisma-cli.cjs generate --schema ../../prisma/schema.prisma",
+    "db:migrate": "node scripts/prisma-cli.cjs migrate dev --schema ../../prisma/schema.prisma",
+    "db:deploy": "node scripts/prisma-cli.cjs migrate deploy --schema ../../prisma/schema.prisma",
+    "db:seed": "tsx ../../prisma/seed.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "zod": "^4.1.12",
+    "@prisma/client": "6.16.2",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "express-rate-limit": "^7.5.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.35.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "@typescript-eslint/parser": "^8.44.0",
+    "prisma": "6.16.2",
+    "@types/cookie-parser": "^1.4.9"
+  }
+}

@@ -1,0 +1,14 @@
+# Normalize line endings so a Windows working tree cannot feed CRLF into a Linux
+# Docker build. Shell continuations and entrypoint scripts are CRLF-sensitive.
+* text=auto eol=lf
+
+# Files Git must never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.ico binary
+
+# Lockfiles and generated migrations stay LF.
+package-lock.json text eol=lf
+*.sql text eol=lf
