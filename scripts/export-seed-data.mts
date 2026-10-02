@@ -79,11 +79,38 @@ const out: string[] = [
   "",
 ];
 
+// Order tables so parents are always inserted before their children. This makes the export
+// FK-safe by construction, so an importer does not depend on FOREIGN_KEY_CHECKS being active on
+// whichever pooled connection happens to run a given statement.
+const fkRows = (await prisma.$queryRawUnsafe(
+  "SELECT TABLE_NAME AS child, REFERENCED_TABLE_NAME AS parent FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL"
+)) as Array<{ child: string; parent: string }>;
+
+const tableNames = tables.map((x) => x.t).filter((t) => !EXCLUDE.has(t));
+const parentsOf = new Map<string, Set<string>>(tableNames.map((t) => [t, new Set<string>()]));
+for (const fk of fkRows) {
+  if (parentsOf.has(fk.child) && parentsOf.has(fk.parent)) parentsOf.get(fk.child)!.add(fk.parent);
+}
+
+const ordered: string[] = [];
+const placed = new Set<string>();
+let guard = 0;
+while (ordered.length < tableNames.length && guard++ < tableNames.length * 2) {
+  for (const t of tableNames) {
+    if (placed.has(t)) continue;
+    const pending = [...parentsOf.get(t)!].filter((p) => !placed.has(p));
+    if (pending.length === 0) {
+      ordered.push(t);
+      placed.add(t);
+    }
+  }
+}
+for (const t of tableNames) if (!placed.has(t)) ordered.push(t); // cycle safety net
+
 let totalRows = 0;
 const summary: string[] = [];
 
-for (const { t } of tables) {
-  if (EXCLUDE.has(t)) continue;
+for (const t of ordered) {
 
   const columns = (
     await prisma.$queryRawUnsafe(
