@@ -13,7 +13,7 @@
         "build": "npm run build --workspace @appzex/api && npm run build:web",
         "build:web": "node scripts/build-web.mjs",
         "lint": "npm run lint --workspace @appzex/api && npm run lint --workspace @appzex/web",
-        "typecheck": "npm run typecheck --workspace @appzex/api && npm run typecheck --workspace @appzex/web",
+        "typecheck": "tsc --noEmit && npm run typecheck --workspace @appzex/api && npm run typecheck --workspace @appzex/web",
         "test": "npm run test --workspace @appzex/api && npm run test --workspace @appzex/web",
         "ai:preflight": "npm run ai:preflight --workspace @appzex/api",
         "test:e2e": "playwright test --config=e2e/playwright.config.mjs",
