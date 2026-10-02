@@ -45,7 +45,6 @@ RUN apk add --no-cache openssl
 # apps/api is copied alongside them. This image is intentionally not size-optimised: correct
 # client resolution and `migrate deploy` are preferred over a smaller layer.
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 COPY --from=builder /app/package.json ./package.json
