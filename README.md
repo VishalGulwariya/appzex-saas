@@ -122,6 +122,55 @@ supplies the reserved non-loopback placeholder `https://api.internal.invalid` wh
 Required environment variables per platform, and the build-time versus run-time distinction for
 `API_INTERNAL_URL`, are documented in [SUBMISSION_NOTE.md](SUBMISSION_NOTE.md) section 6.
 
+### Deploying the web app to Vercel
+
+**Repository:** https://github.com/VishalGulwariya/appzex-saas
+
+1. Sign in at https://vercel.com and choose **Add New → Project**, then import
+   `VishalGulwariya/appzex-saas`. Vercel will detect Next.js; confirm **Framework Preset: Next.js**.
+2. **Leave Root Directory at the repository root.** Do not set it to `apps/web`. This repository
+   is an npm workspaces monorepo and its only lockfile is `package-lock.json` at the root. With the
+   root directory set to `apps/web`, Vercel finds no lockfile, installs unpinned dependency
+   versions, and cannot run the `build:web` wrapper that enforces the production origin guard.
+3. Do not override Build or Output settings in the dashboard. `vercel.json` already sets:
+   - Install Command `npm ci`
+   - Build Command `npm run build:web`
+   - Output Directory `apps/web/.next`
+4. Add the environment variable below, then deploy. The first deploy fails by design if it is
+   missing, which prevents publishing a bundle whose `/api/v1` proxy points at an unresolvable
+   host. Read the failure message rather than removing the guard.
+
+**Environment variables to paste into the Vercel dashboard** (Project → Settings → Environment
+Variables) — this is the complete list:
+
+| Variable | Value | Scope | Required |
+| --- | --- | --- | --- |
+| `API_INTERNAL_URL` | `https://api.your-api-host.com` | **Build + Runtime** | Yes |
+
+`API_INTERNAL_URL` must be an absolute, non-loopback HTTP(S) origin with no trailing path — for
+example `https://api.example.com`, not `http://localhost:4000` and not
+`https://api.example.com/api`. The loopback guard in `apps/web/next.config.ts` is enforced at build
+time and rejects `localhost`, `127.x.x.x`, `::1`, and `0.0.0.0`.
+
+Two properties worth knowing before you deploy:
+
+- **It is a build-time variable.** The `/api/v1` rewrite is resolved while the bundle is built, so
+  setting it only at runtime has no effect. Change it, then redeploy to rebuild.
+- **It must not be `NEXT_PUBLIC_`-prefixed.** It names an internal service; a `NEXT_PUBLIC_` prefix
+  would inline it into the client bundle and expose it to every browser.
+
+The web tier needs no other variables. `DATABASE_URL`, `SESSION_SECRET`, and `AI_API_KEY` belong to
+the API service and must never be added to the Vercel project. `apps/web/.env.example` documents the
+web variables; the API variables are in the root `.env.example`.
+
+**Deliverables — live URLs**
+
+| Deliverable | URL |
+| --- | --- |
+| Repository | https://github.com/VishalGulwariya/appzex-saas |
+| Web app (Vercel) | _pending deployment — paste the production URL here_ |
+| API | _pending deployment — paste the production URL here_ |
+
 ## Browser E2E tests
 
 Browser tests run the real Next.js UI and Express API with a loopback-only mock for the upstream Responses API. They never use OpenAI credentials or send project data externally. Install Chromium with `npm run test:e2e:install`, then run `npm run test:e2e` from the repository root. Node.js 20 or later is required.

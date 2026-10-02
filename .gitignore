@@ -8,6 +8,9 @@ build/
 coverage/
 .turbo/
 *.tsbuildinfo
+# Transient file Next.js writes next to the config while evaluating it; it is deleted on a
+# successful build but can survive a crashed one.
+next.config.compiled.js
 
 # Test output
 test-results/
